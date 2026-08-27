@@ -6,7 +6,7 @@ import dns from "dns";
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 import connectToDb from "../config/db/db.js";
-import AdminModel from "../models/admin.model.js";
+import AdminModel from "../model/admin.model.js";
 
 const createSuperAdmin = async () => {
     try {
@@ -38,3 +38,7 @@ const createSuperAdmin = async () => {
 };
 
 createSuperAdmin();
+
+
+// if you want to Run This File Then  run
+// node src/seeder/superAdminSeeder.js 
