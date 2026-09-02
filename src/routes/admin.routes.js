@@ -11,6 +11,8 @@ import logoutAdminController from "../controllers/admin/logout.admin.controller.
 
 const adminRoutes = express.Router();
 
+//test
+
 // ======================================
 // ADMIN REGISTER
 // ======================================
