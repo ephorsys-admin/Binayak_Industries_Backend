@@ -31,11 +31,13 @@ export const getAllProductService = async (query) => {
   };
 
   // Search
-  if (search) {
-    filter.name = {
-      $regex: search,
-      $options: "i",
-    };
+  if (search && search.trim()) {
+    const searchRegex = new RegExp(search.trim(), "i");
+    filter.$or = [
+      { name: searchRegex },
+      { shortDescription: searchRegex },
+      { slug: searchRegex },
+    ];
   }
 
   // Category
