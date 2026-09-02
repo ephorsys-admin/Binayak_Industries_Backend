@@ -9,7 +9,7 @@ import { getAllCategoryService } from "../../services/categories/getAll.category
  * ==========================================================
  */
 export const getAllCategories = asyncHandler(async (req, res) => {
-    const categories = await getAllCategoryService();
+    const categories = await getAllCategoryService(req.query);
 
     return res.status(200).json({
         success: true,
