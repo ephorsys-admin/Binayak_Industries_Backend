@@ -37,6 +37,7 @@ app.use("/api", limiter);
 const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:4173",
+    "https://binayak-industries-frontend.vercel.app"
 ];
 
 app.use(
