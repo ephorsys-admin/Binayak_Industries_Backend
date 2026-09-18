@@ -3,26 +3,24 @@ import morgan from "morgan";
 import router from "./routes/index.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import mongoSanitize from "express-mongo-sanitize";
-import xss from "xss-clean";
 import hpp from "hpp";
-
 
 const app = express();
 
-// ---------------------------------------------
+// =====================================================
 // Security Headers
-// ---------------------------------------------
+// =====================================================
+
 app.use(helmet());
 
-// ---------------------------------------------
+// =====================================================
 // Rate Limiting
-// ---------------------------------------------
+// =====================================================
+
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 Minutes
+    windowMs: 15 * 60 * 1000,
     max: 100,
     message: {
         success: false,
@@ -32,52 +30,84 @@ const limiter = rateLimit({
 
 app.use("/api", limiter);
 
-// ---------------------------------------------
-// CORS Configuration
-// ---------------------------------------------
-const allowedOrigins = ["http://localhost:5173", "http://localhost:4173"];
+// =====================================================
+// CORS
+// =====================================================
+
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:4173",
+];
 
 app.use(
     cors({
         origin: allowedOrigins,
         credentials: true,
-    }),
+    })
 );
 
-// ---------------------------------------------
+// =====================================================
 // Body Parser
-// ---------------------------------------------
-app.use(express.json({ limit: "20mb" }));
+// =====================================================
 
+app.use(express.json({ limit: "20mb" }));
 
 app.use(
     express.urlencoded({
         extended: true,
         limit: "20mb",
-    }),
+    })
 );
 
-// ---------------------------------------------
+// =====================================================
 // Cookie Parser
-// ---------------------------------------------
+// =====================================================
+
 app.use(cookieParser());
 
-// ---------------------------------------------
+// =====================================================
 // Security Middleware
-// ---------------------------------------------
-app.use(mongoSanitize()); // MongoDB Injection Protection
-app.use(xss()); // XSS Protection
-app.use(hpp()); // HTTP Parameter Pollution Protection
+// =====================================================
 
-// ---------------------------------------------
+// Removed express-mongo-sanitize
+// Removed xss-clean
+
+app.use(hpp());
+
+// =====================================================
 // Logger
-// ---------------------------------------------
+// =====================================================
+
 app.use(morgan("dev"));
 
-// ---------------------------------------------
+// =====================================================
 // API Routes
-// ---------------------------------------------
+// =====================================================
+
 app.use("/api/v1", router);
 
+// =====================================================
+// 404 Handler
+// =====================================================
+
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        message: "Route not found",
+    });
+});
+
+// =====================================================
+// Global Error Handler
+// =====================================================
+
+app.use((err, req, res, next) => {
+    console.error("ERROR:", err);
+
+    res.status(err.status || 500).json({
+        success: false,
+        message: err.message || "Internal Server Error",
+    });
+});
 
 export default app;
