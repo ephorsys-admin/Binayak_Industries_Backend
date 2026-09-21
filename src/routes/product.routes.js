@@ -26,7 +26,10 @@ ProductRouter.post(
   "/create",
   isAuthenticated,
   authorizeRoles("super_admin", "admin"),
-  upload.array("images", 5),
+  upload.fields([
+    { name: "images", maxCount: 5 },
+    { name: "gif", maxCount: 1 },
+  ]),
   createProduct,
 );
 
@@ -67,7 +70,10 @@ ProductRouter.put(
   "/update/:productId",
   isAuthenticated,
   authorizeRoles("super_admin", "admin"),
-  upload.none(),
+  upload.fields([
+    { name: "images", maxCount: 5 },
+    { name: "gif", maxCount: 1 },
+  ]),
   updateProduct,
 );
 

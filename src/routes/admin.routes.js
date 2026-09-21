@@ -6,7 +6,9 @@ import forgotPasswordController from "../controllers/admin/forgot.password.contr
 import verifyForgotOtpController from "../controllers/admin/verify.forgot.otp.controller.js";
 import resetPasswordController from "../controllers/admin/reset.password.controller.js";
 import isAuthenticated from "../middlewares/isAuthenticated.js";
+import authorizeRoles from "../middlewares/authorizeRoles.js";
 import logoutAdminController from "../controllers/admin/logout.admin.controller.js";
+import getAdminDashboardController from "../controllers/admin/dashboard.admin.controller.js";
 
 
 const adminRoutes = express.Router();
@@ -27,6 +29,16 @@ adminRoutes.post("/login", loginAdminController);
 // ADMIN REFRESH TOKEN
 // ======================================
 adminRoutes.post("/refresh-token", refreshTokenController);
+
+// ======================================
+// ADMIN DASHBOARD STATS (PROTECTED)
+// ======================================
+adminRoutes.get(
+    "/dashboard",
+    isAuthenticated,
+    authorizeRoles("super_admin", "admin"),
+    getAdminDashboardController
+);
 
 // ======================================
 // ADMIN PROFILE (PROTECTED TEST ROUTE)

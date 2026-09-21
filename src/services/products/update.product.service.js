@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 import Product from "../../model/product.model.js";
 import ApiError from "../../utils/ApiError.js";
 import Category from "../../model/category.model.js";
+import uploadToCloudinary from "../../utils/uploadToCloudinary.js";
 
-export const updateProductService = async (productId, data, adminId) => {
+export const updateProductService = async (productId, data, adminId, files = {}) => {
   // ==========================================================
   // Validate Product ID
   // ==========================================================
@@ -69,10 +70,39 @@ export const updateProductService = async (productId, data, adminId) => {
   }
 
   // ==========================================================
-  // Update Product
+  // Handle GIF Upload / Removal
   // ==========================================================
+  const gifFiles = files && files.gif ? files.gif : [];
+
+  if (gifFiles.length > 0) {
+    const uploadedGif = await uploadToCloudinary(
+      gifFiles[0].buffer,
+      "products/gifs"
+    );
+    product.gif = {
+      url: uploadedGif.secure_url,
+      publicId: uploadedGif.public_id,
+    };
+  } else if (data.removeGif === "true" || data.removeGif === true) {
+    product.gif = {
+      url: "",
+      publicId: "",
+    };
+  } else if (data.gif && typeof data.gif === "string") {
+    product.gif = {
+      url: data.gif.trim(),
+      publicId: "",
+    };
+  }
+
+  // ==========================================================
+  // Update Product Details
+  // ==========================================================
+  const ignoredKeys = ["gif", "removeGif", "images"];
   Object.keys(data).forEach((key) => {
-    product[key] = data[key];
+    if (!ignoredKeys.includes(key)) {
+      product[key] = data[key];
+    }
   });
 
   product.updatedBy = adminId;
