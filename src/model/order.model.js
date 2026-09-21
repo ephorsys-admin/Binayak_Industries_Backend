@@ -98,6 +98,27 @@ const customerSchema = new mongoose.Schema({
     trim: true,
     default: "",
   },
+  isOrderingForSomeoneElse: {
+    type: Boolean,
+    default: false,
+  },
+  recipient: {
+    name: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    phone: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    giftMessage: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+  },
 });
 
 const statusHistorySchema = new mongoose.Schema({
@@ -134,6 +155,27 @@ const orderSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: "",
+    },
+    isOrderingForSomeoneElse: {
+      type: Boolean,
+      default: false,
+    },
+    recipient: {
+      name: {
+        type: String,
+        trim: true,
+        default: "",
+      },
+      phone: {
+        type: String,
+        trim: true,
+        default: "",
+      },
+      giftMessage: {
+        type: String,
+        trim: true,
+        default: "",
+      },
     },
     customer: {
       type: customerSchema,

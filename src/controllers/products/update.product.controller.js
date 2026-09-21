@@ -6,6 +6,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
     req.params.productId,
     req.body,
     req.admin._id,
+    req.files,
   );
 
   return res.status(200).json({
