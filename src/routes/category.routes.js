@@ -12,6 +12,7 @@ import { updateCategory } from "../controllers/categories/update.category.contro
 const CategoryRouter = express.Router();
 
 
+
 // Get All Categories (Website / Mobile)
 CategoryRouter.get("/", getAllCategories);
 // Create Category
