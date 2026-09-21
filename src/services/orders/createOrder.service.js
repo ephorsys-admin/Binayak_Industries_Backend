@@ -16,6 +16,8 @@ export const createOrderService = async (data) => {
     paymentMethod = "Cash on Delivery",
     couponCode = "",
     guestToken = "",
+    isOrderingForSomeoneElse = false,
+    recipient = {},
   } = data;
 
   if (!customer) {
@@ -34,7 +36,28 @@ export const createOrderService = async (data) => {
     landmark,
     addressType = "Home",
     deliveryNotes = "",
+    isOrderingForSomeoneElse: customerOrderingForSomeoneElse,
+    recipient: customerRecipient,
   } = customer;
+
+  const resolvedIsOrderingForSomeoneElse = Boolean(
+    isOrderingForSomeoneElse || customerOrderingForSomeoneElse
+  );
+
+  const resolvedRecipient = {
+    name: (recipient?.name || customerRecipient?.name || "").trim(),
+    phone: (recipient?.phone || customerRecipient?.phone || "").trim(),
+    giftMessage: (recipient?.giftMessage || customerRecipient?.giftMessage || "").trim(),
+  };
+
+  if (resolvedIsOrderingForSomeoneElse) {
+    if (!resolvedRecipient.name) {
+      throw new ApiError(400, "Recipient full name is required when ordering for someone else");
+    }
+    if (!resolvedRecipient.phone) {
+      throw new ApiError(400, "Recipient mobile number is required for delivery coordination");
+    }
+  }
 
   const resolvedAddress = (address || addressLine || "").trim();
 
@@ -193,6 +216,8 @@ export const createOrderService = async (data) => {
   const order = await Order.create({
     orderId,
     guestToken: guestToken || "",
+    isOrderingForSomeoneElse: resolvedIsOrderingForSomeoneElse,
+    recipient: resolvedRecipient,
     customer: {
       name: name.trim(),
       email: email.trim().toLowerCase(),
@@ -204,6 +229,8 @@ export const createOrderService = async (data) => {
       landmark: (landmark || "").trim(),
       addressType: addressType || "Home",
       deliveryNotes: (deliveryNotes || "").trim(),
+      isOrderingForSomeoneElse: resolvedIsOrderingForSomeoneElse,
+      recipient: resolvedRecipient,
     },
     items: verifiedOrderItems,
     pricing: {

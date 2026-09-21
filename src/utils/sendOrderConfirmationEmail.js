@@ -57,13 +57,23 @@ export const sendOrderConfirmationEmail = async ({ order }) => {
 
             <!-- Delivery Details Box -->
             <div style="background: #fdf8f5; border: 1px solid #fae1d6; border-radius: 8px; padding: 16px; margin-bottom: 25px;">
-              <h3 style="margin: 0 0 10px 0; font-size: 14px; color: #8B1E1E; text-transform: uppercase; letter-spacing: 0.5px;">Delivery Details</h3>
+              <h3 style="margin: 0 0 10px 0; font-size: 14px; color: #8B1E1E; text-transform: uppercase; letter-spacing: 0.5px;">
+                ${(order.isOrderingForSomeoneElse || customer.isOrderingForSomeoneElse) ? "🎁 Recipient Delivery Details" : "Delivery Details"}
+              </h3>
               <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #444444;">
-                <strong>${customer.name}</strong><br/>
-                ${customer.address}${customer.landmark ? `, Near ${customer.landmark}` : ""}<br/>
-                ${customer.city}, ${customer.state} - ${customer.pincode}<br/>
-                <strong>Phone:</strong> ${customer.phone}
+                ${(order.isOrderingForSomeoneElse || customer.isOrderingForSomeoneElse) && (order.recipient?.name || customer.recipient?.name)
+                  ? `<strong>Recipient:</strong> ${order.recipient?.name || customer.recipient?.name}<br/><strong>Recipient Phone:</strong> ${order.recipient?.phone || customer.recipient?.phone}<br/>`
+                  : `<strong>${customer.name}</strong><br/><strong>Phone:</strong> ${customer.phone}<br/>`
+                }
+                <strong>Address:</strong> ${customer.address}${customer.landmark ? `, Near ${customer.landmark}` : ""}<br/>
+                ${customer.city}, ${customer.state} - ${customer.pincode}
               </p>
+              ${(order.isOrderingForSomeoneElse || customer.isOrderingForSomeoneElse) && (order.recipient?.giftMessage || customer.recipient?.giftMessage)
+                ? `<div style="margin-top: 12px; padding: 10px 12px; background: #fff; border-left: 3px solid #8B1E1E; border-radius: 4px; font-size: 13px; color: #555;">
+                    <strong style="color: #8B1E1E;">💌 Gift Note:</strong> "${order.recipient?.giftMessage || customer.recipient?.giftMessage}"
+                   </div>`
+                : ""
+              }
             </div>
 
             <!-- Order Summary Table -->
